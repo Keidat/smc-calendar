@@ -1,0 +1,8 @@
+school.db*
+backups/
+config.json
+__pycache__/
+.env
+.env.local
+*.log
+tests/tmp*/

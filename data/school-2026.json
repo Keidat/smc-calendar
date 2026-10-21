@@ -1,0 +1,425 @@
+{
+  "source": "2026학년도 학사일정 · 2026. 4. 14. 안내 · 사용자 제공 이미지",
+  "events": [
+    {
+      "date": "2026-03-02",
+      "title": "대체휴일",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-03-03",
+      "title": "제55회 입학식 및 개학식",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-03-24",
+      "title": "전국연합학력평가",
+      "description": "대상: 1~2학년",
+      "scope": "school"
+    },
+    {
+      "date": "2026-03-25",
+      "title": "학교소개의 날",
+      "description": "단축수업",
+      "scope": "school"
+    },
+    {
+      "date": "2026-04-22",
+      "title": "1차 정기시험",
+      "description": "기간: 4월 22~24일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-04-23",
+      "title": "1차 정기시험",
+      "description": "기간: 4월 22~24일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-04-24",
+      "title": "1차 정기시험",
+      "description": "기간: 4월 22~24일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-04-28",
+      "title": "소규모테마여행 및 수련회",
+      "description": "기간: 4월 28~30일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-04-29",
+      "title": "소규모테마여행 및 수련회",
+      "description": "기간: 4월 28~30일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-04-30",
+      "title": "소규모테마여행 및 수련회",
+      "description": "기간: 4월 28~30일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-04-29",
+      "title": "제55회 개교기념일",
+      "description": "소규모테마여행 및 수련회 기간 중",
+      "scope": "school"
+    },
+    {
+      "date": "2026-05-01",
+      "title": "노동절",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-05-04",
+      "title": "재량휴무",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-05-05",
+      "title": "어린이날",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-05-12",
+      "title": "스승의 날 중학교 방문행사",
+      "description": "단축수업: 1~4교시",
+      "scope": "school"
+    },
+    {
+      "date": "2026-05-22",
+      "title": "체육대회",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-05-25",
+      "title": "대체휴일",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-05-26",
+      "title": "단축수업 보강",
+      "description": "5월 12일 단축수업 5교시 보강 → 5월 26일 7교시",
+      "scope": "school"
+    },
+    {
+      "date": "2026-05-29",
+      "title": "리더십캠프",
+      "description": "기간: 5월 29~30일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-05-30",
+      "title": "리더십캠프",
+      "description": "기간: 5월 29~30일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-06-03",
+      "title": "지방선거",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-06-04",
+      "title": "전국연합학력평가 / 수능모의평가",
+      "description": "1~2학년: 전국연합학력평가 / 3학년: 수능모의평가",
+      "scope": "school"
+    },
+    {
+      "date": "2026-06-09",
+      "title": "단축수업 보강",
+      "description": "5월 12일 단축수업 6교시 보강 → 6월 9일 7교시. 원문의 6월 12일 비고란에 안내된 보강일.",
+      "scope": "school"
+    },
+    {
+      "date": "2026-06-12",
+      "title": "금요일 → 수요일 시간표",
+      "description": "5월 12일 단축수업 6교시 보강 → 6월 9일 7교시",
+      "scope": "school"
+    },
+    {
+      "date": "2026-06-17",
+      "title": "직업기초능력평가",
+      "description": "대상: 1~2학년",
+      "scope": "school"
+    },
+    {
+      "date": "2026-06-17",
+      "title": "수요일 → 목요일 시간표",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-06-29",
+      "title": "2차 정기시험",
+      "description": "기간: 6월 29일~7월 1일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-06-30",
+      "title": "2차 정기시험",
+      "description": "기간: 6월 29일~7월 1일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-07-01",
+      "title": "2차 정기시험",
+      "description": "기간: 6월 29일~7월 1일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-07-02",
+      "title": "목요일 → 화요일 시간표",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-07-09",
+      "title": "직업기초능력평가",
+      "description": "대상: 3학년",
+      "scope": "school"
+    },
+    {
+      "date": "2026-07-13",
+      "title": "교육과정 자율주간",
+      "description": "기간: 7월 13~14일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-07-14",
+      "title": "교육과정 자율주간",
+      "description": "기간: 7월 13~14일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-07-17",
+      "title": "제헌절",
+      "description": "원문에 휴일로 표기",
+      "scope": "school"
+    },
+    {
+      "date": "2026-07-21",
+      "title": "여름방학식",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-08-17",
+      "title": "대체휴일",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-08-18",
+      "title": "개학일",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-08-25",
+      "title": "화요일 → 월요일 시간표",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-09-02",
+      "title": "전국연합학력평가 / 수능모의평가",
+      "description": "1~2학년: 전국연합학력평가 / 3학년: 수능모의평가",
+      "scope": "school"
+    },
+    {
+      "date": "2026-09-08",
+      "title": "화요일 → 금요일 시간표",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-09-23",
+      "title": "수요일 → 금요일 시간표",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-09-24",
+      "title": "추석연휴",
+      "description": "원문에 기재된 기간: 9월 24~25일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-09-25",
+      "title": "추석연휴",
+      "description": "원문에 기재된 기간: 9월 24~25일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-09-28",
+      "title": "재량휴무",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-10-05",
+      "title": "대체휴일",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-10-09",
+      "title": "한글날",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-10-15",
+      "title": "1차 정기시험",
+      "description": "기간: 10월 15~19일. 토·일요일(17~18일)을 제외한 수업일에 표시.",
+      "scope": "school"
+    },
+    {
+      "date": "2026-10-16",
+      "title": "1차 정기시험",
+      "description": "기간: 10월 15~19일. 토·일요일(17~18일)을 제외한 수업일에 표시.",
+      "scope": "school"
+    },
+    {
+      "date": "2026-10-19",
+      "title": "1차 정기시험",
+      "description": "기간: 10월 15~19일. 토·일요일(17~18일)을 제외한 수업일에 표시.",
+      "scope": "school"
+    },
+    {
+      "date": "2026-10-23",
+      "title": "축제",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-11-02",
+      "title": "교육과정 자율주간",
+      "description": "기간: 11월 2~6일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-11-03",
+      "title": "교육과정 자율주간",
+      "description": "기간: 11월 2~6일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-11-04",
+      "title": "교육과정 자율주간",
+      "description": "기간: 11월 2~6일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-11-05",
+      "title": "교육과정 자율주간",
+      "description": "기간: 11월 2~6일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-11-06",
+      "title": "교육과정 자율주간",
+      "description": "기간: 11월 2~6일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-11-18",
+      "title": "단축수업",
+      "description": "1~4교시 수업. 5교시 보강 → 12월 1일 7교시, 6교시 보강 → 12월 8일 7교시, 7교시 보강 → 12월 15일 7교시",
+      "scope": "school"
+    },
+    {
+      "date": "2026-11-19",
+      "title": "수능일 / 1·2학년 휴업",
+      "description": "1·2학년 휴업",
+      "scope": "school"
+    },
+    {
+      "date": "2026-11-20",
+      "title": "재량휴업",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-11-24",
+      "title": "화요일 → 목요일 시간표",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-11-26",
+      "title": "신입생 특별전형 면접",
+      "description": "휴업일 · 교사 출근",
+      "scope": "school"
+    },
+    {
+      "date": "2026-12-01",
+      "title": "단축수업 보강",
+      "description": "11월 18일 단축수업 5교시 보강 → 12월 1일 7교시",
+      "scope": "school"
+    },
+    {
+      "date": "2026-12-08",
+      "title": "단축수업 보강",
+      "description": "11월 18일 단축수업 6교시 보강 → 12월 8일 7교시",
+      "scope": "school"
+    },
+    {
+      "date": "2026-12-15",
+      "title": "단축수업 보강",
+      "description": "11월 18일 단축수업 7교시 보강 → 12월 15일 7교시",
+      "scope": "school"
+    },
+    {
+      "date": "2026-12-16",
+      "title": "수요일 → 목요일 시간표",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2026-12-21",
+      "title": "2차 정기시험",
+      "description": "기간: 12월 21~23일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-12-22",
+      "title": "2차 정기시험",
+      "description": "기간: 12월 21~23일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-12-23",
+      "title": "2차 정기시험",
+      "description": "기간: 12월 21~23일",
+      "scope": "school"
+    },
+    {
+      "date": "2026-12-25",
+      "title": "성탄절",
+      "description": "",
+      "scope": "school"
+    },
+    {
+      "date": "2027-01-01",
+      "title": "신정",
+      "description": "2026학년도 2학기 일정",
+      "scope": "school"
+    },
+    {
+      "date": "2027-01-11",
+      "title": "제53회 졸업식 및 종업식",
+      "description": "2026학년도 2학기 일정",
+      "scope": "school"
+    }
+  ]
+}

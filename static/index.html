@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>세명 스쿨캘린더</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="shell">
+        <aside><a class="brand" href="/">s<span>c</span><small>SMC CALENDAR</small></a>
+            <div class="school">세명컴퓨터고등학교<br><span>우리 학교의 하루를 한눈에</span></div>
+            <nav><button class="nav" id="allNav">▦ <span>전체 일정</span></button><button class="nav active" id="schoolNav">▦ <span>학사일정</span></button><button class="nav"
+                    id="classNav">◫ <span>학급일정</span></button><button class="nav" id="adminNav"
+                    hidden>⚙ <span>관리자</span></button><button class="nav" id="mealNav">♧ <span>급식</span></button><button class="nav" id="inquiryNav">✉ <span>관리자 문의</span></button></nav>
+            <div class="coming"><span>COMING NEXT</span>
+                <p>시간표</p><small>더 편리한 학교생활을 준비 중이에요.</small>
+            </div>
+            <div class="sidefoot">학교생활, 조금 더 가볍게.<br><span>SEMYEONG SCHOOL CALENDAR</span></div>
+        </aside>
+        <main>
+            <header>
+                <div class="breadcrumb">학교생활 <span>/</span> <b id="viewLabel">학사일정</b></div>
+                <div id="account"></div>
+            </header>
+            <section class="intro">
+                <div>
+                    <div class="eyebrow">YOUR SCHOOL, AT A GLANCE</div>
+                    <h1>우리 학교의 모든 일정.</h1>
+                    <p>중요한 날을 놓치지 않도록, 한 달의 학교생활을 함께 확인해요.</p>
+                </div>
+                <div class="todayBadge"><span>TODAY</span><strong id="todayLabel"></strong></div>
+            </section>
+            <section class="toolbar">
+                <div class="tabs" aria-label="일정 필터"><button id="allTab">전체</button><button id="schoolTab" class="selected">학사일정</button><button id="classTab">학급일정</button>
+                </div><select id="classFilter" aria-label="조회할 학급" hidden></select>
+                <div class="legend"><span class="schoolDot"></span>학사일정 <span class="classDot"></span>학급일정</div><button
+                    id="addEvent" class="primary" hidden>＋ 일정 등록</button>
+            </section>
+            <div class="workspace">
+                <section class="calendarCard">
+                    <div class="monthbar">
+                        <div class="calendarMonthNavigation"><button id="prev" class="monthArrow" aria-label="이전 달">‹</button><div class="calendarMonthLabel"><span id="yearLabel"></span><h2 id="monthLabel"></h2></div><button id="next" class="monthArrow" aria-label="다음 달">›</button></div>
+                        <div class="monthButtons"><button id="expandCalendar" aria-label="달력 확대" title="달력 확대" hidden>⛶</button><button id="today" class="todayIcon" aria-label="오늘로 이동" title="오늘로 이동"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7"></circle><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"></circle><path d="M12 2v3m0 14v3M2 12h3m14 0h3"></path></svg></button></div>
+                    </div>
+                    <div class="weekdays">
+                        <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+                    </div>
+                    <div id="calendar" class="calendar"></div>
+                    <div class="calendarFoot">날짜를 선택하면 상세 일정을 확인할 수 있어요.<span id="monthCount"></span></div>
+                </section>
+                <section class="agenda">
+                    <div class="agendaHead"><span>DAY PLANNER</span>
+                        <h2 id="selectedDate"></h2>
+                        <p id="selectedWeekday"></p>
+                    </div>
+                    <div id="agendaList"></div>
+                    <div class="note"><span>작은 준비가 만드는 여유</span>
+                        <p>일정을 확인하고, 내일의 학교생활을<br>미리 준비해 보세요.</p>
+                    </div>
+                </section>
+<section id="commentsPanel" class="commentsPanel" hidden><h2>일정 댓글</h2><p id="commentsTitle" class="muted"></p><div id="commentsList"></div><form id="commentForm"><input name="event_id" type="hidden"><label>댓글 작성<textarea name="body" rows="3" maxlength="1000" required></textarea></label><p class="hint">댓글은 실명으로 표시됩니다. 최대 1000자까지 입력할 수 있습니다.</p><p id="commentMessage" class="formMessage" role="status"></p><button class="primary wide">댓글 등록</button></form></section>
+            </div>
+    <section id="adminPage" class="adminPage" hidden><button type="button" id="backToCalendar" class="secondary">달력으로 돌아가기</button>
+        <div class="eyebrow">ADMINISTRATION</div>
+        <h2>관리자 공간</h2>
+        <p class="muted">회원 정보, 문의 및 학교 설정을 관리합니다.</p><div class="adminTabs" role="tablist" aria-label="관리자 메뉴"><button type="button" role="tab" data-admin-tab="inquiries">문의함</button><button type="button" role="tab" data-admin-tab="members">회원 관리</button><button type="button" role="tab" data-admin-tab="schedule">일정 관리</button><button type="button" role="tab" data-admin-tab="notices">알림 보내기</button><button type="button" role="tab" data-admin-tab="delivery">발송 내역</button><button type="button" role="tab" data-admin-tab="settings">설정</button></div><div class="adminBlock" data-admin-pane="members" hidden><button id="loadUsers" class="secondary">회원 목록 조회</button>
+        <div id="memberSearchPanel" class="directoryPanel" hidden><div class="directoryFilters"><input id="memberSearch" type="search" aria-label="이름, 아이디, 이메일 검색"><select id="memberClass" aria-label="회원 학급 필터"></select><button id="memberSearchButton" class="secondary" type="button">검색</button></div><p class="hint">이름·아이디·이메일로 검색할 수 있습니다.</p></div><div id="userList"></div><div id="memberPagination" class="directoryPagination"></div></div><div class="adminBlock" data-admin-pane="schedule" hidden><h3>일정 관리</h3><button id="adminAddEvent" class="secondary">일정 등록</button></div><div class="adminBlock" data-admin-pane="inquiries" hidden><h3>접수된 문의</h3><button id="loadInquiries" class="secondary">문의 조회</button><div class="directoryFilters inquiryFilters"><input id="inquirySearch" type="search" aria-label="문의 제목, 내용, 작성자 검색"><select id="inquiryStatusFilter" aria-label="문의 답변 상태"><option value="all">전체 문의</option><option value="pending">미답변</option><option value="answered">답변 완료</option></select></div><p id="inquiryStatus" class="muted" role="status"></p><div id="inquiryList"></div></div><div class="adminBlock" data-admin-pane="notices" hidden><h3>회원 알림</h3><button id="loadNoticeRecipients" class="secondary" type="button">수신자 검색</button><form id="noticeForm"><label>수신 대상<select id="noticeMode"><option value="selected">선택한 회원</option><option value="all">전체 회원</option></select></label><div id="recipientPicker" class="directoryPanel"><div class="directoryFilters"><input id="recipientSearch" type="search" aria-label="수신자 이름, 아이디, 이메일 검색"><select id="recipientClass" aria-label="수신자 학급 필터"></select><button id="recipientSearchButton" class="secondary" type="button">검색</button></div><div class="recipientControls"><button id="selectRecipientPage" type="button" class="secondary">현재 결과 선택</button><button id="clearRecipients" type="button" class="secondary">선택 해제</button><span id="selectedRecipientCount" role="status">선택 0명</span></div><div id="selectedRecipientList" class="recipientChips"></div><div id="recipientResults" class="recipientResults"></div><div id="recipientPagination" class="directoryPagination"></div></div><p id="noticeResult" class="formMessage" role="status"></p><p class="hint">선택한 회원의 사이트 알림함과 가입 이메일로 함께 전송합니다.</p><label>제목<input name="title" maxlength="100" required></label><label>내용<textarea name="body" rows="4" maxlength="4000" required></textarea></label><button class="primary">알림 발송</button></form>
+        </div><div class="adminBlock" data-admin-pane="delivery" hidden><h3>이메일 발송 내역</h3><button id="loadEmailHistory" class="secondary" type="button">최근 발송 내역 확인</button><div id="emailHistory"></div></div><div class="adminBlock" data-admin-pane="settings" hidden><form id="domainForm"><label>허용할 이메일 도메인<textarea id="domains" rows="2"></textarea></label>
+            <p class="hint">여러 도메인은 쉼표로 구분하세요. 새 도메인을 추가해도 기존 도메인을 유지할 수 있습니다.</p><button class="primary">도메인 저장</button>
+        </form>
+</div>    </section>
+            <section id="mealPage" class="mealPage" hidden><div class="eyebrow">SCHOOL MEALS</div><h2>오늘은 어떤 급식일까요?</h2><p class="muted">세명컴퓨터고등학교 · 날짜를 선택해 급식을 확인하세요.</p><div class="monthbar mealMonthbar"><div class="mealMonthNavigation"><button id="mealPrev" class="monthArrow" aria-label="이전 달">‹</button><h2 id="mealMonthTitle"></h2><button id="mealNext" class="monthArrow" aria-label="다음 달">›</button></div><div class="monthButtons"><button id="mealToday" class="todayIcon" aria-label="오늘로 이동" title="오늘로 이동"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7"></circle><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"></circle><path d="M12 2v3m0 14v3M2 12h3m14 0h3"></path></svg></button></div></div><p id="mealStatus" class="muted" role="status"></p><div class="mealLayout"><div class="mealCalendarWrap"><div class="weekdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div><div id="mealCalendar" class="mealCalendar"></div></div><div id="mealContent" aria-live="polite"></div></div><p class="hint">메뉴 뒤 괄호의 숫자는 나이스에서 제공하는 알레르기 정보입니다. 식단은 학교 사정에 따라 변경될 수 있습니다.</p><p class="hint">출처: <a href="https://open.neis.go.kr" target="_blank" rel="noopener noreferrer">나이스 교육정보 개방 포털</a></p></section>
+            <footer>세명컴퓨터고등학교 학생을 위한 학교생활 도우미 <span>SMC CALENDAR · 개인 프로젝트</span></footer>
+        </main>
+    </div>
+    <dialog id="authDialog"><button class="close" data-close="authDialog" aria-label="닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"></path></svg></button><div class="dialogContent">
+        <div class="eyebrow">WELCOME TO SMC</div>
+        <h2 id="authTitle">다시 만나 반가워요.</h2>
+        <p class="muted">학교 이메일로 우리 반의 일정을 함께 확인하세요.</p>
+        <div class="tabs authTabs"><button id="loginTab" class="selected">로그인</button><button
+                id="registerTab">회원가입</button></div>
+        <form id="authForm">
+            <label>아이디<input name="username" required minlength="4" maxlength="30" pattern="[A-Za-z0-9_]{4,30}" autocomplete="username"></label>
+            <p id="usernameStatus" class="fieldStatus" role="status" hidden></p><div id="registerFields" hidden><label>회원 구분<select name="member_type" id="memberType"><option value="student" selected>학생</option><option value="teacher">교사</option></select></label><p id="teacherHint" class="hint" hidden>교사 계정은 관리자에게 문의해 주세요: semyeong.calendar@gmail.com</p>
+                
+                <label>실명<input name="name" maxlength="30" autocomplete="name"></label>
+                <label>학교 이메일<input name="email" type="email" autocomplete="email"></label>
+                <details class="emailFormats"><summary>다음 형식의 이메일 사용가능</summary><div id="domainHint"></div></details>
+                
+                <label>인증 코드 <small>유효시간 10분 · 최대 5회 시도</small><span class="codeRow"><input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6"><button type="button" id="sendCode" class="secondary">인증 코드 받기</button></span></label>
+                <label>소속 학급<select name="class_name" id="signupClass"></select></label>
+                <p class="hint">학급 변경이 필요하면 관리자 문의를 이용하세요.</p>
+            </div>
+            <label>비밀번호<input name="password" type="password" maxlength="128" required autocomplete="current-password"></label>
+            <label id="passwordConfirmLabel" hidden>비밀번호 확인<input name="password_confirm" type="password" maxlength="128" autocomplete="new-password"></label><p id="signupPasswordStatus" class="fieldStatus" role="status" hidden></p><p class="hint" id="passwordHint" hidden>비밀번호는 8~128자로 입력하세요.</p>
+            <p id="authMessage" class="formMessage" role="status"></p><button class="primary wide" id="authSubmit">로그인</button><button id="forgotPassword" type="button" class="textButton">비밀번호를 잊으셨나요?</button>
+        </form>
+    </div></dialog>
+    <dialog id="eventDialog"><button class="close" data-close="eventDialog" aria-label="닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"></path></svg></button><div class="dialogContent">
+        <div class="eyebrow">PLAN YOUR DAY</div>
+        <h2 id="eventHeading">일정 등록</h2>
+        <form id="eventForm"><input name="id" type="hidden"><label>제목<input name="title" maxlength="100" required></label><label>날짜<input name="date" type="date" required></label><label>일정
+                구분<select name="scope" id="eventScope">
+                    <option value="class">학급일정</option>
+                    <option value="school">학사일정</option>
+                </select></label><label id="eventClassLabel" hidden>대상 학급<select name="class_name" id="eventClass"></select></label><label>상세
+                내용<textarea name="description" rows="4" maxlength="2000"></textarea></label>
+            
+            <p id="eventMessage" class="formMessage" role="status"></p><button class="primary wide">저장하기</button>
+        </form>
+    </div></dialog>
+
+    <dialog id="userDialog"><button class="close" data-close="userDialog" aria-label="닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"></path></svg></button><div class="dialogContent">
+        <h2>회원 정보 수정</h2>
+        <form id="userForm"><input name="id" type="hidden"><label>아이디<input name="username" required minlength="4" maxlength="30"></label><label>이메일<input name="email" type="email"
+                    required></label><button type="button" id="userSendCode" class="secondary wide">이메일 변경 시 새 주소로 인증 코드
+                전송</button><label>새 이메일 인증 코드<input name="code" inputmode="numeric" maxlength="6"></label><label>실명<input name="name" required
+                    maxlength="30"></label><label>학급<select name="class_name"
+                    id="userClass"></select></label><label>권한<select name="role">
+                    <option value="student">학생</option><option value="teacher">교사</option>
+                    <option value="admin">관리자</option>
+                </select></label><label>새 비밀번호 (변경할 때만 입력)<input name="password" type="password" minlength="8"
+                    maxlength="128" autocomplete="new-password"></label>
+            <p class="hint">이메일 변경은 새 주소의 소유자 인증이 필요합니다. 저장하면 해당 회원의 기존 로그인은 종료됩니다.</p>
+            <p id="userMessage" class="formMessage" role="status"></p><button class="primary wide">회원 정보 저장</button>
+        </form>
+    </div></dialog>
+    <dialog id="reauthDialog"><button class="close" data-close="reauthDialog" aria-label="닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"></path></svg></button><div class="dialogContent">
+        <h2>비밀번호 확인</h2>
+        <p id="reauthAction" class="muted"></p>
+        <form id="reauthForm"><label>비밀번호<input name="password" type="password" required
+                    autocomplete="off"></label><button class="primary wide">확인</button></form>
+    </div></dialog>
+    <dialog id="profileDialog"><button class="close" data-close="profileDialog" aria-label="닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"></path></svg></button><div class="dialogContent">
+        <h2>개인정보 확인</h2><p class="muted">계정 정보를 확인하고 변경 가능한 항목을 수정하세요.</p><div id="profileInfo" class="profileDetails"></div>
+        
+        <p class="hint">실명·아이디·이메일·학급 변경은 관리자에게 문의해 주세요.</p><div class="profileMobileActions"><button id="profileLogout" class="secondary" type="button">로그아웃</button></div>
+    </div></dialog>
+    <dialog id="inquiryDialog"><button class="close" data-close="inquiryDialog" aria-label="닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"></path></svg></button><div class="dialogContent">
+        <h2>관리자에게 문의</h2><p class="muted">작성한 문의는 semyeong.calendar@gmail.com으로 전송됩니다.</p>
+        <form id="inquiryForm"><label>제목<input name="title" required maxlength="100"></label><label>문의 내용<textarea name="body" required rows="6" maxlength="4000"></textarea></label><div class="inquiryUpload"><label class="secondary imageSelectButton" for="inquiryImageFiles">이미지 첨부</label><input id="inquiryImageFiles" type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple><p class="hint">문의 작성 중 Ctrl+V로 이미지를 붙여넣을 수 있습니다. 최대 3장 · 한 장당 2MB · PNG/JPEG/GIF/WebP</p><div id="inquiryImagePreviews" class="inquiryImages"></div></div>
+        <p class="hint">답변을 받을 수 있도록 계정의 이메일·아이디·실명·학급 정보가 함께 전달됩니다.</p>
+        <p id="inquiryMessage" class="formMessage" role="status"></p><button class="primary wide">문의 전송</button></form>
+    </div></dialog>
+    <dialog id="passwordDialog"><button class="close" data-close="passwordDialog" aria-label="닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"></path></svg></button><div class="dialogContent"><h2>비밀번호 수정</h2><form id="passwordForm"><label>현재 비밀번호<input name="current_password" type="password" required autocomplete="current-password"></label><label>새 비밀번호<input name="new_password" type="password" required minlength="8" maxlength="128" autocomplete="new-password"></label><label>새 비밀번호 확인<input name="password_confirm" type="password" required minlength="8" maxlength="128" autocomplete="new-password"></label><p id="passwordMessage" class="formMessage" role="status"></p><button class="primary wide">비밀번호 변경</button></form><p class="hint">변경 후 모든 기기에서 로그아웃됩니다.</p></div></dialog>
+    <dialog id="notificationsDialog"><button class="close" data-close="notificationsDialog" aria-label="닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"></path></svg></button><div class="dialogContent"><h2>알림함</h2><p class="muted">관리자 회신과 학교 알림을 확인하세요.</p><button id="readAllNotifications" class="secondary">모두 읽음</button><div id="notificationList"></div></div></dialog>
+    <dialog id="replyDialog"><button class="close" data-close="replyDialog" aria-label="닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"></path></svg></button><div class="dialogContent"><h2>문의 회신</h2><p id="replyTitle" class="muted"></p><div id="replyOriginal" class="messageCard"></div><form id="replyForm"><input name="id" type="hidden"><label>답변<textarea name="body" rows="5" maxlength="4000" required></textarea></label><p id="replyMessage" class="formMessage" role="status"></p><button class="primary wide">답변 보내기</button></form></div></dialog>
+
+    <dialog id="editCommentDialog"><button class="close" data-close="editCommentDialog" aria-label="닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"></path></svg></button><div class="dialogContent"><h2>댓글 수정</h2><form id="editCommentForm"><input type="hidden" name="id"><label>댓글 내용<textarea name="body" rows="5" maxlength="1000" required></textarea></label><p id="editCommentMessage" class="formMessage" role="status"></p><button class="primary wide">수정 저장</button></form></div></dialog>
+    <dialog id="recoveryDialog"><button class="close" data-close="recoveryDialog" aria-label="닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button><div class="dialogContent"><h2>비밀번호 복구</h2><p class="muted">가입한 아이디와 학교 이메일로 인증 후 새 비밀번호를 설정하세요.</p><form id="recoveryForm"><label>아이디<input name="username" required minlength="4" maxlength="30" autocomplete="username"></label><label>가입한 학교 이메일<input name="email" type="email" required autocomplete="email"></label><label>복구 인증 코드<span class="codeRow"><input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required><button id="requestRecovery" type="button" class="secondary">코드 받기</button></span></label><p class="hint">유효시간 10분 · 재전송 간격 60초 · 최대 5회 시도</p><label>새 비밀번호<input name="new_password" type="password" required minlength="8" maxlength="128" autocomplete="new-password"></label><label>새 비밀번호 확인<input name="password_confirm" type="password" required minlength="8" maxlength="128" autocomplete="new-password"></label><p id="recoveryMessage" class="formMessage" role="status"></p><button class="primary wide">비밀번호 재설정</button></form></div></dialog>
+    <div id="toast" role="status" hidden></div>
+    <script src="/app.js"></script>
+</body>
+
+</html>
