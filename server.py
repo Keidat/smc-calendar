@@ -55,6 +55,8 @@ def init():
         CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY,title TEXT,date TEXT,description TEXT,scope TEXT,class_name TEXT,author INTEGER);
         CREATE TABLE IF NOT EXISTS rates(key TEXT PRIMARY KEY,count INTEGER,expires REAL);
         CREATE TABLE IF NOT EXISTS audit(id INTEGER PRIMARY KEY,admin INTEGER,action TEXT,created TEXT);''')
+        if 'admin_verified_until' not in {r['name'] for r in db.execute('PRAGMA table_info(sessions)')}:
+            db.execute('ALTER TABLE sessions ADD COLUMN admin_verified_until REAL DEFAULT 0')
         columns={r['name'] for r in db.execute('PRAGMA table_info(users)')}
         if 'username' not in columns: db.execute('ALTER TABLE users ADD COLUMN username TEXT')
         if 'nickname' not in columns: db.execute('ALTER TABLE users ADD COLUMN nickname TEXT')
@@ -198,9 +200,16 @@ class Handler(BaseHTTPRequestHandler):
     def admin(self,db,b):
         u=self.auth(db)
         require(u['role']=='admin','관리자 권한이 필요합니다.',403)
-        self.rate(db,'admin:'+str(u['id']),10)
-        require(verify(b.get('admin_password',''),u['password']),'관리자 비밀번호를 다시 확인하세요.',403)
-        db.execute('DELETE FROM rates WHERE key=?',('admin:'+str(u['id']),))
+        cookies=SimpleCookie(self.headers.get('Cookie',''))
+        token=hashlib.sha256(cookies['session'].value.encode()).hexdigest()
+        session=db.execute('SELECT admin_verified_until FROM sessions WHERE token=?',(token,)).fetchone()
+        if session['admin_verified_until']<=time.time() or 'admin_password' in b:
+            require('admin_password' in b,'관리자 비밀번호 확인이 필요합니다.',428)
+            self.rate(db,'admin:'+str(u['id']),10)
+            require(verify(b.get('admin_password',''),u['password']),'관리자 비밀번호를 다시 확인하세요.',403)
+            db.execute('DELETE FROM rates WHERE key=?',('admin:'+str(u['id']),))
+            db.execute('UPDATE sessions SET admin_verified_until=? WHERE token=?',(time.time()+30,token))
+            db.commit()
         db.execute('INSERT INTO audit(admin,action,created) VALUES(?,?,?)',(u['id'],self.path,dt.datetime.now(dt.UTC).isoformat()))
         return u
     def rate(self,db,key,limit):
@@ -353,7 +362,7 @@ class Handler(BaseHTTPRequestHandler):
             require(u and verify(b['password'],u['password']),'아이디 또는 비밀번호가 잘못되었습니다.',401)
             db.execute('DELETE FROM rates WHERE key=?',('login:'+self.client_address[0]+':'+username,))
             token=secrets.token_urlsafe(32)
-            db.execute('INSERT INTO sessions VALUES(?,?,?)',(hashlib.sha256(token.encode()).hexdigest(),u['id'],time.time()+86400))
+            db.execute('INSERT INTO sessions(token,user_id,expires) VALUES(?,?,?)',(hashlib.sha256(token.encode()).hexdigest(),u['id'],time.time()+86400))
             cookie=f'session={token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=86400'+ ('; Secure' if os.getenv('COOKIE_SECURE')=='1' else '')
         elif path=='/api/comment/save':
             u=self.auth(db);self.rate(db,'comment:'+str(u['id']),20)
@@ -387,6 +396,22 @@ class Handler(BaseHTTPRequestHandler):
             else:require(comment['user_id']==u['id'] or u['role']=='teacher','댓글 삭제 권한이 없습니다.',403)
             db.execute('DELETE FROM comment_likes WHERE comment_id=?',(comment['id'],))
             db.execute('DELETE FROM comments WHERE id=?',(comment['id'],))
+        elif path=='/api/profile/delete':
+            u=self.auth(db)
+            require(u['role']!='admin','관리자 계정은 회원탈퇴를 사용할 수 없습니다.',403)
+            self.rate(db,'withdraw:'+str(u['id']),5)
+            require(verify(b.get('current_password',''),u['password']),'현재 비밀번호가 일치하지 않습니다.',403)
+            require(b.get('confirmation')=='회원탈퇴','회원탈퇴 확인 문구를 입력하세요.')
+            db.execute('DELETE FROM comment_likes WHERE user_id=? OR comment_id IN (SELECT id FROM comments WHERE user_id=?)',(u['id'],u['id']))
+            db.execute('DELETE FROM comments WHERE user_id=?',(u['id'],))
+            db.execute('DELETE FROM inquiry_attachments WHERE inquiry_id IN (SELECT id FROM inquiries WHERE user_id=?)',(u['id'],))
+            for table in ['inquiries','notifications','sessions','reset_codes']:
+                db.execute(f'DELETE FROM {table} WHERE user_id=?',(u['id'],))
+            db.execute('DELETE FROM codes WHERE email=?',(u['email'],))
+            db.execute('UPDATE events SET author=NULL WHERE author=?',(u['id'],))
+            db.execute('UPDATE audit SET admin=NULL WHERE admin=?',(u['id'],))
+            db.execute('DELETE FROM users WHERE id=?',(u['id'],))
+            cookie='session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0'
         elif path=='/api/profile/password':
             u=self.auth(db)
             self.rate(db,'password:'+str(u['id']),10)
@@ -540,5 +565,5 @@ if __name__=='__main__':
         with connect() as db: db.execute("INSERT INTO users(email,name,class_name,password,role,username,nickname) VALUES(?,?,?,?, 'admin',?,?)",(email,'관리자',config()['classes'][0],password_hash(pw),username,None))
         print('관리자 생성 완료')
     else:
-        port=int(os.getenv('PORT','8000')); print(f'http://127.0.0.1:{port}',flush=True)
+        port=int(os.getenv('PORT','2026')); print(f'http://127.0.0.1:{port}',flush=True)
         HTTPServer((os.getenv('HOST','127.0.0.1'),port),Handler).serve_forever()

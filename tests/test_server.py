@@ -46,6 +46,51 @@ class IntegrationTests(unittest.TestCase):
     def admin(self):
         with server.connect() as db:db.execute("INSERT INTO users(email,name,class_name,password,role,username,nickname) VALUES(?,?,?,?,?,?,?)",('admin@smc.sen.hs.kr','관리자','1학년 1반',server.password_hash('admin-password-123'),'admin','admin','관리자'))
         return self.request('login',{'username':'admin','password':'admin-password-123'})[2].split(';')[0]
+    def test_withdrawal_password_cleanup_and_admin_block(self):
+        cookie=self.student()
+        self.assertEqual(self.request('profile/delete',{'current_password':'wrong','confirmation':'회원탈퇴'},cookie)[0],403)
+        with server.connect() as db:
+            uid=db.execute("SELECT id FROM users WHERE username='user_a'").fetchone()[0]
+            db.execute("INSERT INTO events(title,date,scope,author) VALUES('공유 일정','2026-10-27','school',?)",(uid,))
+            db.execute("INSERT INTO comments(event_id,user_id,body) VALUES(1,?,'댓글')",(uid,))
+            db.execute('INSERT INTO comment_likes VALUES(1,?)',(uid,))
+            db.execute("INSERT INTO inquiries(user_id,title,body) VALUES(?,'문의','내용')",(uid,))
+            db.execute("INSERT INTO inquiry_attachments VALUES('img',1,'img.png','image/png',X'00')")
+            db.execute("INSERT INTO notifications(user_id,title) VALUES(?,'알림')",(uid,))
+        self.assertEqual(self.request('profile/delete',{'current_password':'test-password-123','confirmation':'회원탈퇴'},cookie)[0],200)
+        self.assertIsNone(self.request('bootstrap',cookie=cookie)[1]['user'])
+        with server.connect() as db:
+            for table in ['users','sessions','comments','comment_likes','inquiries','inquiry_attachments','notifications']:
+                self.assertEqual(db.execute(f'SELECT count(*) FROM {table}').fetchone()[0],0)
+            self.assertIsNone(db.execute('SELECT author FROM events').fetchone()[0])
+        admin=self.admin()
+        self.assertEqual(self.request('profile/delete',{'current_password':'admin-password-123','confirmation':'회원탈퇴'},admin)[0],403)
+        with server.connect() as db:
+            db.execute("INSERT INTO users(email,name,role,username) VALUES('other@smc.sen.hs.kr','관리자2','admin','admin2')")
+        self.assertEqual(self.request('profile/delete',{'current_password':'admin-password-123','confirmation':'회원탈퇴'},admin)[0],403)
+        with server.connect() as db:
+            self.assertEqual(db.execute("SELECT count(*) FROM users WHERE role='admin'").fetchone()[0],2)
+
+    def test_admin_verification_expiry_and_session_isolation(self):
+        cookie=self.admin()
+        self.assertEqual(self.request('admin/users',{},cookie)[0],428)
+        self.assertEqual(self.request('admin/users',{'admin_password':'wrong'},cookie)[0],403)
+        self.assertEqual(self.request('admin/users',{'admin_password':'admin-password-123'},cookie)[0],200)
+        with server.connect() as db:
+            deadline=db.execute('SELECT admin_verified_until FROM sessions').fetchone()[0]
+        self.assertEqual(self.request('admin/users',{},cookie)[0],200)
+        with server.connect() as db:
+            self.assertEqual(deadline,db.execute('SELECT admin_verified_until FROM sessions').fetchone()[0])
+        other=self.request('login',{'username':'admin','password':'admin-password-123'})[2].split(';')[0]
+        self.assertEqual(self.request('admin/users',{},other)[0],428)
+        with server.connect() as db:
+            db.execute('UPDATE sessions SET admin_verified_until=0')
+        self.assertEqual(self.request('admin/users',{},cookie)[0],428)
+        self.assertEqual(self.request('admin/users',{'admin_password':'admin-password-123'},cookie)[0],200)
+        with server.connect() as db:
+            db.execute("UPDATE users SET role='student' WHERE username='admin'")
+        self.assertEqual(self.request('admin/users',{},cookie)[0],403)
+
     def test_public_private_and_class_permissions(self):
         self.assertEqual(self.request('events')[0],200)
         self.assertEqual(self.request('events?scope=class&class=1%ED%95%99%EB%85%84%201%EB%B0%98')[0],200)
@@ -69,13 +114,13 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(self.request('register',b)[0],400)
     def test_admin_every_action_and_domains(self):
         cookie=self.admin();pw={'admin_password':'admin-password-123'}
-        self.assertEqual(self.request('admin/users',{},cookie)[0],403)
+        self.assertEqual(self.request('admin/users',{},cookie)[0],428)
         self.assertEqual(self.request('admin/users',pw,cookie)[0],200)
-        self.assertEqual(self.request('admin/users',{},cookie)[0],403)
+        self.assertEqual(self.request('admin/users',{},cookie)[0],200)
         self.assertNotIn('password',self.request('admin/users',pw,cookie)[1]['users'][0])
         self.assertEqual(self.request('admin/domains',{'domains':['smc.sen.hs.kr','new.school.kr'],**pw},cookie)[0],200)
         self.assertEqual(self.request('send-code',{'email':'x@new.school.kr'})[0],200)
-        self.assertEqual(self.request('admin/domains',{'domains':['bad']},cookie)[0],403)
+        self.assertEqual(self.request('admin/domains',{'domains':['bad']},cookie)[0],400)
         event={'title':'학사일정','date':'2026-11-11','scope':'school',**pw}
         self.assertEqual(self.request('event/save',event,cookie)[0],200)
         self.assertEqual(len(self.request('events')[1]['events']),1)
@@ -251,7 +296,7 @@ class IntegrationTests(unittest.TestCase):
         for _ in range(2):self.assertEqual(self.request('comment/like',{'id':1,'liked':True},user)[0],200)
         self.assertEqual(self.request('events')[1]['events'][0]['featured_comment']['likes'],1)
         self.assertEqual(self.request('comment/pin',{'id':2,'pinned':True},user)[0],403)
-        self.assertEqual(self.request('comment/pin',{'id':2,'pinned':True},admin)[0],403)
+        self.assertEqual(self.request('comment/pin',{'id':2,'pinned':True},admin)[0],200)
         p={'admin_password':'admin-password-123'}
         self.assertEqual(self.request('comment/pin',{'id':2,'pinned':True,**p},admin)[0],200)
         featured=self.request('events')[1]['events'][0]['featured_comment']

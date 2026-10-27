@@ -219,3 +219,7 @@ dialog .dialogContent>h2:first-child{margin-top:0;padding-right:38px;min-height:
 .eventChip:hover{background-color:#e9edfc;color:#5267c7}
 .eventChip.class:hover{background-color:#eeE9f8;color:#8665c2}
 }
+
+.notificationControls{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}#notificationViewTitle{font-size:14px;color:var(--muted)}
+
+#showReadNotifications{margin-left:auto}.profileWithdrawal{display:flex;justify-content:flex-end;margin-top:24px}.profileWithdrawal button{color:#b44252}

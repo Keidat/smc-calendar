@@ -1,0 +1,21 @@
+[Unit]
+Description=SMC School Calendar
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=gksmf
+WorkingDirectory=/home/gksmf/smc-calendar
+ExecStart=/usr/bin/python3 -u /home/gksmf/smc-calendar/server.py
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

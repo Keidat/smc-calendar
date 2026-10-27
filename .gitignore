@@ -6,3 +6,6 @@ __pycache__/
 .env.local
 *.log
 tests/tmp*/
+
+# Local administrator and operations documentation
+docs/private/
