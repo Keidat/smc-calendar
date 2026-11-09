@@ -223,3 +223,61 @@ dialog .dialogContent>h2:first-child{margin-top:0;padding-right:38px;min-height:
 .notificationControls{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}#notificationViewTitle{font-size:14px;color:var(--muted)}
 
 #showReadNotifications{margin-left:auto}.profileWithdrawal{display:flex;justify-content:flex-end;margin-top:24px}.profileWithdrawal button{color:#b44252}
+
+/* 좁은 날짜 칸에서도 일정 존재와 종류를 명확히 표시 */
+.dayEventIndicator{display:none;flex-shrink:0;align-items:center;gap:3px;min-height:13px;max-width:100%;color:#65728d;font-size:9px;line-height:1}
+.dayEventDot{display:inline-block;width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.dayEventCount{font-variant-numeric:tabular-nums}
+@media(max-width:650px){
+.workspace:not(.detailMode) .dayEventIndicator{display:flex;margin:0 0 4px 3px}
+.workspace:not(.detailMode) .day .eventChip{display:block;flex-shrink:0;min-height:20px}
+}
+.detailMode .calendarCard .day.hasEvents::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--blue)}
+
+@media(max-width:650px){
+#calendar .day .eventChip{pointer-events:none}
+#mobileDayPopup{width:calc(100vw - 20px);max-width:540px;max-height:80dvh;border-radius:20px;padding:6px}
+#mobileDayPopup .dialogContent{max-height:calc(80dvh - 12px);padding:44px 12px 16px}
+#mobileDayPopup .agenda{border:0;margin:0;padding:0 6px;min-height:0;background:transparent}
+#mobileDayPopup .agendaHead{padding-right:12px}
+#mobileDayPopup .agendaHead h2{margin:8px 0;font-size:22px}
+#mobileDayPopup .agendaHead p{margin-bottom:16px}
+#mobileDayPopup .agendaEvent{padding:16px 12px;margin:10px 0;border:1px solid var(--line);border-radius:12px;cursor:pointer}
+#mobileDayPopup .agendaEvent h3{font-size:15px;line-height:1.6}
+#mobileDayPopup .agendaEvent p{font-size:13px;line-height:1.8}
+#mobileDayPopup .agenda .note{display:none}
+}
+
+/* 모바일의 날짜별 목록은 달력 아래 대신 날짜 선택 팝업에서 표시 */
+@media(max-width:650px){
+.workspace:not(.detailMode)>.agenda{display:none}
+}
+
+.mobileHomeBar{display:none}
+@media(max-width:650px){
+.mobileHomeBar{display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:90;min-height:62px;padding:calc(8px + env(safe-area-inset-top)) 18px 8px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 3px 14px #202b430a;transform:translateY(-110%);transition:transform .2s ease;pointer-events:none}
+.mobileHomeBar.visible{transform:translateY(0);pointer-events:auto}
+.mobileHomeBar .brand{font-size:30px;letter-spacing:-4px;margin:0;line-height:1}
+.mobileHomeButton{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border-radius:12px;background:#f3f5fc;color:var(--blue)}
+.mobileHomeButton .actionIcon{width:23px;height:23px}
+.mobileHomeButton:hover{background:#e9edfc}
+}
+@media(prefers-reduced-motion:reduce){.mobileHomeBar{transition:none}}
+
+@media(max-width:650px){
+.mealLayout>#mealContent{display:none}
+.mealCalendar .mealDay{min-height:74px;padding:6px 3px;gap:2px}
+.mealCalendar .mealDay .mealDish{display:none}
+.mealCalendar .mealDay .mealLabel{font-size:10px;line-height:1.4;margin:1px 0;color:var(--blue)}
+.mealCalendar .mealDay .mealNone{font-size:0;margin:3px 0}
+.mealCalendar .mealDay .mealNone::after{content:'—';font-size:11px;color:#a1aabc}
+#mobileMealPopup{width:calc(100vw - 20px);max-width:540px;max-height:85dvh;border-radius:20px;padding:6px}
+#mobileMealPopup .dialogContent{max-height:calc(85dvh - 12px);padding:44px 18px 20px}
+#mobileMealPopup #mealContent>h3{font-size:21px;margin:0 0 18px;padding-right:12px}
+#mobileMealPopup .mealCard{max-width:none;padding:18px;margin:12px 0;background:#fafbff}
+#mobileMealPopup .dishList{font-size:15px;line-height:2;overflow-wrap:anywhere}
+#mobileMealPopup .mealDetails{font-size:13px}
+#mobileMealPopup .mealDetails summary{padding:8px 0;min-height:40px}
+#mobileMealPopup .mealEmpty{font-size:13px;padding:24px 16px}
+#mealStatus>.secondary{margin:8px;min-height:40px}
+}

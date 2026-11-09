@@ -10,7 +10,7 @@ const context={state:{detail:false,selected:'2026-10-27',selectedEvent:null,mont
     $:()=>filter,innerWidth:1000,
     history:{get state(){return entries[index]},replaceState:s=>entries[index]=s,pushState:s=>{entries.splice(index+1);entries.push(s);index++}},
     window:{addEventListener:(name,fn)=>handlers[name]=fn},
-    setDetailLayout:()=>{},renderCalendar:()=>{},scrollToScheduleDetails:()=>{},closeActionMenu:()=>{},showCalendar:()=>{},loadEvents:async()=>{}};
+    closeMobileDayPopup:()=>{},openMobileDayPopup:()=>{},setDetailLayout:()=>{},renderCalendar:()=>{},scrollToScheduleDetails:()=>{},closeActionMenu:()=>{},showCalendar:()=>{},loadEvents:async()=>{}};
 vm.createContext(context);
 vm.runInContext(source.slice(source.indexOf('function calendarHistorySnapshot()'),source.indexOf('function setDetailLayout(')),context);
 (async()=>{
@@ -27,5 +27,14 @@ vm.runInContext(source.slice(source.indexOf('function calendarHistorySnapshot()'
     await handlers.popstate({state:entries[++index]});
     assert.equal(context.state.detail,true,'forward restores detail');
     assert.equal(context.state.scope,'all');
+    let popupOpened=0,popupClosed=0;
+    context.innerWidth=390;
+    context.openMobileDayPopup=()=>popupOpened++;
+    context.closeMobileDayPopup=()=>popupClosed++;
+    context.selectScheduleDate('2026-10-29');
+    assert.equal(popupOpened,1,'mobile date selection opens the day list popup');
+    context.openComments({id:2,date:'2026-10-29'});
+    assert.equal(popupClosed,1,'choosing an event closes the popup before detail');
+    assert.equal(context.state.selectedEvent,2);
     console.log('Calendar back/forward scenarios passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});
