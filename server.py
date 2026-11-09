@@ -48,6 +48,7 @@ def connect():
     finally:
         db.close()
 def init():
+    new_database=not DB.exists()
     with connect() as db:
         db.executescript('''CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY,email TEXT UNIQUE,name TEXT,class_name TEXT,password TEXT,role TEXT DEFAULT 'student');
         CREATE TABLE IF NOT EXISTS codes(email TEXT PRIMARY KEY,hash TEXT,expires REAL,attempts INTEGER,sent REAL);
@@ -61,6 +62,7 @@ def init():
         if 'username' not in columns: db.execute('ALTER TABLE users ADD COLUMN username TEXT')
         if 'nickname' not in columns: db.execute('ALTER TABLE users ADD COLUMN nickname TEXT')
         if 'school_identity' not in columns:db.execute('ALTER TABLE users ADD COLUMN school_identity TEXT')
+        if 'must_change_password' not in columns:db.execute('ALTER TABLE users ADD COLUMN must_change_password INTEGER DEFAULT 0')
         identities={}
         for row in db.execute('SELECT id,email FROM users').fetchall():
             key=school_identity(row['email'])
@@ -82,6 +84,9 @@ def init():
         cols={r['name'] for r in db.execute('PRAGMA table_info(inquiries)')}
         if 'reply' not in cols: db.execute("ALTER TABLE inquiries ADD COLUMN reply TEXT DEFAULT ''")
         if 'replied_at' not in cols: db.execute('ALTER TABLE inquiries ADD COLUMN replied_at TEXT')
+        if new_database:
+            db.execute('INSERT INTO users(email,name,class_name,password,role,username,nickname,must_change_password) VALUES(?,?,?,?,?,?,?,1)',
+                       (None,'관리자','관리자',password_hash('0123'),'admin','admin',''))
 def password_hash(p):
     salt = secrets.token_hex(16)
     return salt + ':' + hashlib.scrypt(p.encode(),salt=bytes.fromhex(salt),n=16384,r=8,p=1).hex()
@@ -96,7 +101,7 @@ def valid_email(email):
     require(bool(re.fullmatch(r'[A-Za-z0-9.!#$%&\'*+/=?^_`{|}~-]+@[A-Za-z0-9.-]+',email)) and email.rsplit('@',1)[-1] in config()['domains'],'허용된 학교 이메일을 입력하세요.')
 
 def school_identity(email):
-    local,_,domain=email.strip().lower().partition('@')
+    local,_,domain=(email or '').strip().lower().partition('@')
     if domain not in ['smc.sen.hs.kr','sonline20.sen.go.kr']:return None
     pattern=r'(\d{2}s\d{3})' if domain=='smc.sen.hs.kr' else r'(\d{2}s\d{3})[a-z]\d+'
     match=re.fullmatch(pattern,local)
@@ -109,6 +114,7 @@ def check_school_identity(db,email,exclude_id=0):
 def send_mail(email,subject,body,reply_to=None,attachments=None):
     host = os.getenv('SMTP_HOST')
     require(host,'이메일 서버 설정이 필요합니다. 관리자에게 문의하세요.',503)
+    require(isinstance(email,str) and bool(email.strip()),'수신 이메일이 설정되지 않았습니다.',503)
     msg = EmailMessage()
     msg['From']=os.getenv('SMTP_FROM',os.getenv('SMTP_USER',''))
     msg['To']=email
@@ -196,7 +202,9 @@ class Handler(BaseHTTPRequestHandler):
         token=cookies.get('session')
         return db.execute('SELECT u.* FROM users u JOIN sessions s ON u.id=s.user_id WHERE s.token=? AND s.expires>?',(hashlib.sha256(token.value.encode()).hexdigest() if token else '',time.time())).fetchone()
     def auth(self,db):
-        u=self.user(db); require(u is not None,'로그인이 필요합니다.',401); return u
+        u=self.user(db); require(u is not None,'로그인이 필요합니다.',401)
+        require(not u['must_change_password'] or urlparse(self.path).path in ['/api/profile/password','/api/logout'],'먼저 초기 비밀번호를 변경하세요.',403)
+        return u
     def admin(self,db,b):
         u=self.auth(db)
         require(u['role']=='admin','관리자 권한이 필요합니다.',403)
@@ -258,6 +266,9 @@ class Handler(BaseHTTPRequestHandler):
         except Exception: self.reply({'error':'서버 처리 중 오류가 발생했습니다.'},500)
     def route(self,db,method,path,b):
         cookie=None
+        current=self.user(db)
+        if current and current['must_change_password']:
+            require(path in ['/api/bootstrap','/api/profile/password','/api/logout'],'먼저 초기 비밀번호를 변경하세요.',403)
         if method=='GET' and path=='/api/meals':
             query=parse_qs(urlparse(self.path).query)
             date=query.get('month',query.get('date',['']))[0]
@@ -267,7 +278,7 @@ class Handler(BaseHTTPRequestHandler):
         if method=='GET' and path=='/api/bootstrap':
             u=self.user(db)
             unread=db.execute('SELECT count(*) FROM notifications WHERE user_id=? AND is_read=0',(u['id'],)).fetchone()[0] if u else 0
-            return {'user':{k:u[k] for k in ['id','email','name','class_name','role','username']} if u else None,'unread':unread,'capabilities':['bulk_notifications_v2'],**config()},None
+            return {'user':{k:u[k] for k in ['id','email','name','class_name','role','username','must_change_password']} if u else None,'unread':unread,'capabilities':['bulk_notifications_v2'],**config()},None
         if method=='GET' and path=='/api/notifications':
             u=self.auth(db)
             return {'notifications':[dict(r) for r in db.execute('SELECT * FROM notifications WHERE user_id=? ORDER BY id DESC',(u['id'],))]},None
@@ -418,7 +429,7 @@ class Handler(BaseHTTPRequestHandler):
             require(verify(b.get('current_password',''),u['password']),'현재 비밀번호가 일치하지 않습니다.',403)
             require(8<=len(b['new_password'])<=128,'비밀번호는 8~128자로 입력하세요.')
             require(b['new_password']==b.get('password_confirm'),'새 비밀번호 확인이 일치하지 않습니다.')
-            db.execute('UPDATE users SET password=? WHERE id=?',(password_hash(b['new_password']),u['id']))
+            db.execute('UPDATE users SET password=?,must_change_password=0 WHERE id=?',(password_hash(b['new_password']),u['id']))
             db.execute('DELETE FROM sessions WHERE user_id=?',(u['id'],))
             db.execute('DELETE FROM reset_codes WHERE user_id=?',(u['id'],))
             db.execute('DELETE FROM rates WHERE key=?',('password:'+str(u['id']),))

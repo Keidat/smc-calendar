@@ -19,7 +19,9 @@ class IntegrationTests(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parent)
         self.old_db,self.old_cfg=server.DB,server.CONFIG
         server.DB=Path(self.tmp.name)/'test.sqlite3';server.CONFIG=Path(self.tmp.name)/'config.json'
-        server.init();self.mail={}
+        server.init()
+        with server.connect() as db:db.execute('DELETE FROM users')
+        self.mail={}
         self.mock=patch.object(server,'send_code',side_effect=lambda email,code:self.mail.update({email:code}));self.mock.start()
     def tearDown(self):
         self.mock.stop()
@@ -90,6 +92,27 @@ class IntegrationTests(unittest.TestCase):
         with server.connect() as db:
             db.execute("UPDATE users SET role='student' WHERE username='admin'")
         self.assertEqual(self.request('admin/users',{},cookie)[0],403)
+
+    def test_new_database_initial_admin_requires_password_change(self):
+        server.DB.unlink()
+        server.init()
+        cookie=self.request('login',{'username':'admin','password':'0123'})[2].split(';')[0]
+        self.assertTrue(self.request('bootstrap',cookie=cookie)[1]['user']['must_change_password'])
+        self.assertEqual(self.request('admin/users',{'admin_password':'0123'},cookie)[0],403)
+        self.assertEqual(self.request('events',cookie=cookie)[0],403)
+        self.assertEqual(self.request('profile/password',{'current_password':'wrong','new_password':'new-password-123','password_confirm':'new-password-123'},cookie)[0],403)
+        self.assertEqual(self.request('profile/password',{'current_password':'0123','new_password':'0123','password_confirm':'0123'},cookie)[0],400)
+        self.assertEqual(self.request('profile/password',{'current_password':'0123','new_password':'new-password-123','password_confirm':'different'},cookie)[0],400)
+        self.assertEqual(self.request('profile/password',{'current_password':'0123','new_password':'new-password-123','password_confirm':'new-password-123'},cookie)[0],200)
+        self.assertIsNone(self.request('bootstrap',cookie=cookie)[1]['user'])
+        self.assertEqual(self.request('login',{'username':'admin','password':'0123'})[0],401)
+        cookie=self.request('login',{'username':'admin','password':'new-password-123'})[2].split(';')[0]
+        self.assertFalse(self.request('bootstrap',cookie=cookie)[1]['user']['must_change_password'])
+        server.init()
+        self.assertEqual(self.request('login',{'username':'admin','password':'0123'})[0],401)
+        with server.connect() as db:db.execute('DELETE FROM users')
+        server.init()
+        with server.connect() as db:self.assertEqual(db.execute('SELECT count(*) FROM users').fetchone()[0],0)
 
     def test_public_private_and_class_permissions(self):
         self.assertEqual(self.request('events')[0],200)
